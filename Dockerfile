@@ -1,8 +1,10 @@
 FROM node:alpine
-USER nobody
+
+EXPOSE 80
+
 workdir /usr/app
 copy ./ /usr/app
-EXPOSE 80
-RUN npm i
-RUN npm build
-CMD npm start
+
+run yarn
+run yarn build
+CMD yarn start
