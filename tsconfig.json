@@ -1,0 +1,16 @@
+{
+	"compilerOptions": {
+		"allowJs": false,
+		"checkJs": false,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"resolveJsonModule": true,
+		"lib": ["esnext"],
+		"module": "esnext",
+		"target": "esnext",
+		"moduleResolution": "node",
+		"types": ["node"]
+	},
+	"exclude": ["node_modules/*", "public/*"],
+	"include": ["*.ts"]
+}
