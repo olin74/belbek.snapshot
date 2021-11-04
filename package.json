@@ -1,5 +1,5 @@
 {
-	"name": "aho-redis",
+	"name": "belbek-redis-snapshot",
 	"version": "1.0.0",
 	"description": "a bridge",
 	"main": "index.ts",
