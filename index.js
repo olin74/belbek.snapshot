@@ -44,4 +44,5 @@ function adaptMessages(data) {
 	// bind
 	p2p.once("connected", () => console.log("p2p connected"));
 	p2p.on("peer", peerHandler);
+	p2p.on("peer-seen", console.log);
 })();
