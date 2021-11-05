@@ -1,15 +1,10 @@
 {
 	"compilerOptions": {
-		"allowJs": false,
-		"checkJs": false,
-		"noUnusedLocals": true,
-		"noUnusedParameters": true,
-		"resolveJsonModule": true,
-		"lib": ["esnext", "node"],
-		"module": "esnext",
-		"target": "esnext",
+		"allowSyntheticDefaultImports": true,
+		"lib": ["ES2021"],
+		"module": "ES2020",
 		"moduleResolution": "node",
-		"types": ["node"]
+		"target": "ES2021"
 	},
 	"exclude": ["node_modules/*", "public/*"],
 	"include": ["*.ts"]
