@@ -1,0 +1,12 @@
+diff --git a/node_modules/switchboard.js/dist/tracker.js b/node_modules/switchboard.js/dist/tracker.js
+index 5ad4f75..7204e6a 100644
+--- a/node_modules/switchboard.js/dist/tracker.js
++++ b/node_modules/switchboard.js/dist/tracker.js
+@@ -75,6 +75,7 @@ var tweetnacl_1 = __importDefault(require("tweetnacl"));
+ var peer_1 = __importDefault(require("./peer"));
+ var subscribable_1 = __importDefault(require("./subscribable"));
+ var errors_1 = require("./errors");
++var WebSocket = require("ws");
+ // noinspection JSUnusedLocalSymbols
+ /**
+  * @hidden The debug-logging method. Defaults to noop.
