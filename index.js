@@ -1,5 +1,4 @@
 import { createClient } from "redis";
-import "wrtc";
 import { Switchboard } from "switchboard.js";
 
 const options = {
