@@ -53,12 +53,12 @@ const options: SBClientOptions = {
 	let messages = {};
 	// init
 	const p2p: SBType = new Switchboard(options); // p2p client
-	const redis: RedisClient = await createClient({
+	const redis: RedisClient = createClient({
 		url: process.env.REDIS_URL,
 		password: process.env.REDIS_PASSWORD,
 	}); // redis
 
-	console.dir(redis.connect);
+	redis.on("error", (err) => console.error("Redis Client Error", err));
 
 	// connect
 	await redis.connect();
@@ -80,7 +80,6 @@ const options: SBClientOptions = {
 		peer.send(redis.get("snapshot"));
 	};
 
-	// bind some events
-	redis.on("error", console.error);
+	// bind
 	p2p.on("peer", peerHandler);
 })();
