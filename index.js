@@ -20,7 +20,7 @@ function adaptMessages(data) {
 (async () => {
 	const p2p = new Switchboard(options);
 
-	console.info(p2p);
+	// console.info(p2p);
 
 	const client = createClient({
 		url: process.env.REDIS_URL,
@@ -29,6 +29,7 @@ function adaptMessages(data) {
 
 	client.on("error", (err) => console.log("Redis Client Error", err));
 	await client.connect();
+	console.log("redis connected");
 	p2p.swarm("belbekmarket");
 
 	const peerHandler = (peer) => {
@@ -41,5 +42,6 @@ function adaptMessages(data) {
 	};
 
 	// bind
+	p2p.once("connected", () => console.log("p2p connected"));
 	p2p.on("peer", peerHandler);
 })();
