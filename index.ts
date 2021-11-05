@@ -57,8 +57,8 @@ const options: SBClientOptions = {
 		url: process.env.REDIS_URL,
 		password: process.env.REDIS_PASSWORD,
 	}); // redis
-	console.info(redis);
-	console.dir(redis);
+
+	console.dir(redis.connect);
 
 	// connect
 	await redis.connect();
