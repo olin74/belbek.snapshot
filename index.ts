@@ -1,4 +1,5 @@
 import { createClient } from "redis";
+import type { RedisClient } from "redis";
 import { Switchboard } from "switchboard.js";
 import type {
 	ConnectedPeer,
@@ -52,7 +53,10 @@ const options: SBClientOptions = {
 	let messages = {};
 	// init
 	const p2p: SBType = new Switchboard(options); // p2p client
-	const redis = await createClient({ url: process.env.REDIS_URL }); // redis
+	const redis: RedisClient = await createClient({
+		url: process.env.REDIS_URL,
+		password: process.env.REDIS_PASSWORD,
+	}); // redis
 
 	// connect
 	await redis.connect();
