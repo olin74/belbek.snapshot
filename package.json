@@ -17,5 +17,6 @@
 	"scripts": {
 		"build": "tsc index.ts",
 		"start": "node index.js"
-	}
+	},
+	"type": "module"
 }
