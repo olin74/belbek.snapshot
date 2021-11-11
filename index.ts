@@ -6,6 +6,8 @@ import type {
 	SBClientOptions,
 	Switchboard as SBType,
 } from "switchboard.js";
+import puppeteer from "puppeteer";
+
 /*
 interface Review {
 	id: string; // TODO: generate review id
@@ -51,35 +53,50 @@ const options: SBClientOptions = {
 
 (async () => {
 	let messages = {};
-	// init
-	const p2p: SBType = new Switchboard(options); // p2p client
+	// redis
 	const redis: RedisClient = createClient({
 		url: process.env.REDIS_URL,
 		password: process.env.REDIS_PASSWORD,
-	}); // redis
+	});
 
 	redis.on("error", (err) => console.error("Redis Client Error", err));
 
-	// connect
-	await redis.connect();
-	p2p.swarm("belbekmarket");
+	const browser = await puppeteer.launch({
+		headless: false,
+		args: ["--load-extension=extensions/webrtc"],
+	});
 
-	const msgHandler = async (ev: any, peerId: string) => {
-		const msg: Message = await JSON.parse(ev.data);
-		// auto fields
-		msg.from = peerId;
-		msg.timestamp = Date.now();
-		msg.id = msg.from + "-" + msg.timestamp.toString();
-		messages[msg.id] = msg;
-		redis.set("snapshot-back", JSON.stringify(messages));
-	};
+	const page = await browser.newPage();
 
-	const peerHandler = async (peer: ConnectedPeer) => {
-		console.log("Connected to peer: ", peer.id);
-		peer.on("message", async (ev) => await msgHandler(ev, peer.id));
-		peer.send(redis.get("snapshot"));
-	};
+	await page.evaluate(async () => {
+		// p2p
+		const p2p: SBType = new Switchboard(options); // p2p client
+		await redis.connect();
+		p2p.swarm("belbekmarket");
 
-	// bind
-	p2p.on("peer", peerHandler);
+		const msgHandler = async (ev: any, peerId: string) => {
+			const msg: Message = await JSON.parse(ev.data);
+			// auto fields
+			msg.from = peerId;
+			msg.timestamp = Date.now();
+			msg.id = msg.from + "-" + msg.timestamp.toString();
+			messages[msg.id] = msg;
+			redis.set("snapshot-back", JSON.stringify(messages));
+		};
+
+		const peerHandler = async (peer: ConnectedPeer) => {
+			console.log("Connected to peer: ", peer.id);
+			peer.on("message", async (ev) => await msgHandler(ev, peer.id));
+			peer.send(redis.get("snapshot"));
+		};
+
+		// bind
+		p2p.on("peer", peerHandler);
+	});
+
+	// Make chromium console calls available to nodejs console
+	page.on("console", (msg) => {
+		for (let i = 0; i < msg.args().length; ++i)
+			console.log(`${i}: ${msg.args()[i]}`);
+	});
 })();
