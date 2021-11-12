@@ -23,8 +23,9 @@ function adaptMessages(data) {
 	});
 
 	client.on("error", (err) => console.log("Redis Client Error", err));
-	await client.connect();
-	console.log("redis connected");
+	console.log(client);
+
+	// await client.connect();
 
 	const browser = await puppeteer.launch({
 		headless: false,
