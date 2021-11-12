@@ -1,4 +1,5 @@
 const { createClient } = require("redis");
+const puppeteer = require("puppeteer");
 
 const options = {
 	trackers: [
@@ -26,7 +27,6 @@ function adaptMessages(data) {
 	console.log(client);
 
 	// await client.connect();
-
 	const browser = await puppeteer.launch({
 		headless: false,
 		args: ["--load-extension=extensions/webrtc"],
