@@ -1,15 +1,6 @@
 const { createClient } = require("redis");
 const puppeteer = require("puppeteer");
 
-const options = {
-	trackers: [
-		// 'wss://tracker.sloppyta.co:443/announce',
-		// 'wss://tracker.files.fm:7073/announce',
-		"wss://tracker.openwebtorrent.com",
-		"wss://tracker.btorrent.xyz",
-	],
-};
-
 let messages = {}; // storage
 
 function adaptMessages(data) {
@@ -24,34 +15,50 @@ function adaptMessages(data) {
 	});
 
 	client.on("error", (err) => console.log("Redis Client Error", err));
-	console.log(client);
-
+	// console.log(client);
 	// await client.connect();
+
 	const browser = await puppeteer.launch({
-		headless: false,
+		headless: true,
 		args: ["--load-extension=extensions/webrtc"],
 	});
 	const page = await browser.newPage();
 
 	await page.evaluate(async () => {
-		const { Switchboard } = require("switchboard.js");
-		const p2p = new Switchboard(options);
+		// const { Switchboard } = require("switchboard.js");
+		const s = document.createElement('script')
+		s.async = true
+		s.defer = true
+		s.src = 'https://cdn.jsdelivr.net/npm/switchboard.js@1.1.0/dist/index-browser.min.js'
+		s.addEventListener('load', () => {
+			const p2p = new switchboard.Switchboard({
+				trackers: [
+					// 'wss://tracker.sloppyta.co:443/announce',
+					// 'wss://tracker.files.fm:7073/announce',
+					"wss://tracker.openwebtorrent.com",
+					"wss://tracker.btorrent.xyz",
+				],
+			});
+			// console.log(p2p)
 
-		p2p.swarm("belbekmarket");
+			p2p.swarm("belbekmarket");
 
-		const peerHandler = (peer) => {
-			console.log("new peer: ", peer.id);
-			const ts = Date.now();
-			const today = (ts - (ts % (3600 * 24))).toString();
-			const data = client.get("snapshot-" + today);
-			// peer.on("message", (ev) => msgHandler(ev, peer.id));
-			adaptMessages(data).forEach((msg) => peer.send(msg));
-		};
+			const peerHandler = (peer) => {
+				console.log("new peer: ", peer.id);
+				const ts = Date.now();
+				const today = (ts - (ts % (3600 * 24))).toString();
+				const data = client.get("snapshot-" + today);
+				// peer.on("message", (ev) => msgHandler(ev, peer.id));
+				adaptMessages(data).forEach((msg) => peer.send(msg));
+			};
 
-		// bind
-		p2p.once("connected", () => console.log("p2p connected"));
-		p2p.on("peer", peerHandler);
-		p2p.on("peer-seen", console.log);
+			// bind
+			p2p.once("connected", () => console.log("p2p connected"));
+			p2p.on("peer", peerHandler);
+			p2p.on("peer-seen", console.log);
+		});
+		document.body.setAttribute('style', 'background-color: lightgreen')
+		document.body.appendChild(s)
 	});
 
 	page.on("console", (msg) => {
