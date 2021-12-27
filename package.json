@@ -7,8 +7,7 @@
 	"license": "MIT",
 	"dependencies": {
 		"puppeteer": "^11.0.0",
-		"redis": "^3.1.2",
-		"switchboard.js": "^1.1.0"
+		"redis": "^3.1.2"
 	},
 	"scripts": {
 		"start": "node index.cjs"
