@@ -1,23 +1,36 @@
 const { createClient } = require("redis");
 const puppeteer = require("puppeteer");
 
-let messages = {}; // storage
-
-function adaptMessages(data) {
-	console.debug(data); // FIXME: testing only
-	return [];
-}
-
 (async () => {
-	const client = createClient({
+
+	// storage
+	let data = {}
+
+	// redis
+	const client = await createClient({
 		url: process.env.REDIS_URL,
 		password: process.env.REDIS_PASSWORD,
-	});
+	})
+	client.on("error", (err) => console.log("redis: client error", err))
 
-	client.on("error", (err) => console.log("Redis Client Error", err));
-	// console.log(client);
-	// await client.connect();
+	let syncTimeout
 
+	// push and pull items data from re
+	const syncData = async () => {
+		await client.keys('*', (err, keys) => {
+			if (err) return console.error(err)
+			console.log('redis: loading ' + keys.length.toString() + ' entries')
+			await keys.forEach(async (key) => data[key] = await client.hgetall(key))
+			const dkeys = Object.keys(data)
+			console.log('cache: contains ' + dkeys.length.toString() + ' entries')
+			await dkeys.forEach(async (k) => !keys.includes(k) && await client.hset(k, data[k]))
+		})
+		console.log('redis: cache data synced')
+		syncTimeout = setTimeout(syncData, everyHour)
+	}
+	syncData()
+
+	// browser env
 	const browser = await puppeteer.launch({
 		headless: true,
 		args: ["--load-extension=extensions/webrtc"],
@@ -25,7 +38,6 @@ function adaptMessages(data) {
 	const page = await browser.newPage();
 
 	await page.evaluate(async () => {
-		// const { Switchboard } = require("switchboard.js");
 		const s = document.createElement('script')
 		s.async = true
 		s.defer = true
@@ -36,21 +48,18 @@ function adaptMessages(data) {
 					// 'wss://tracker.sloppyta.co:443/announce',
 					// 'wss://tracker.files.fm:7073/announce',
 					"wss://tracker.openwebtorrent.com",
-					"wss://tracker.btorrent.xyz",
+					"wss://tracker.btorrent.xyz"
 				],
-			});
-			// console.log(p2p)
+			})
 
 			p2p.swarm("belbekmarket");
 
-			const peerHandler = (peer) => {
-				console.log("new peer: ", peer.id);
-				const ts = Date.now();
-				const today = (ts - (ts % (3600 * 24))).toString();
-				const data = client.get("snapshot-" + today);
-				// peer.on("message", (ev) => msgHandler(ev, peer.id));
-				adaptMessages(data).forEach((msg) => peer.send(msg));
-			};
+			const peerHandler = async (peer) => {
+				console.log("new peer: ", peer.id)
+				// peer.on("message", (ev) => data[peer.id] = ev.data)
+				peer.on('data', (peerData) => data[peer.id] = peerData)
+				Object.values(data).forEach((msg) => peer.send(msg))
+			}
 
 			// bind
 			p2p.once("connected", () => console.log("p2p connected"));
@@ -65,4 +74,7 @@ function adaptMessages(data) {
 		for (let i = 0; i < msg.args().length; ++i)
 			console.log(`${i}: ${msg.args()[i]}`);
 	});
+	page.on('close', () => {
+		syncTimeout = null
+	})
 })();
