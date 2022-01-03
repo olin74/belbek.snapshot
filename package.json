@@ -6,15 +6,8 @@
 	"author": "Belbek Walley Software",
 	"license": "MIT",
 	"dependencies": {
-		"bittorrent-tracker": "^9.18.3",
 		"puppeteer": "^11.0.0",
 		"redis": "^3.1.2"
 	},
-	"scripts": {
-		"start": "node tracker.cjs"
-	},
-	"type": "module",
-	"engines": {
-		"yarn": "1.x.x"
-	}
+	"type": "module"
 }
