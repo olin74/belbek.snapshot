@@ -1,6 +1,6 @@
 const { Server } = require('bittorrent-tracker')
 const port = process.env.PORT || 9090
-const hostname = 'nameless-temple-25126.herokuapp.com'
+const hostname = 'localhost'
 
 let server = new Server({
 	udp: false, // enable udp server? [default=true]

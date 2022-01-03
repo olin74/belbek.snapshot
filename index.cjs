@@ -48,8 +48,7 @@ const puppeteer = require("puppeteer");
 					// 'wss://tracker.sloppyta.co:443/announce',
 					// 'wss://tracker.files.fm:7073/announce',
 					"wss://tracker.openwebtorrent.com",
-					"wss://tracker.btorrent.xyz",
-					"wss://nameless-temple-25126.herokuapp.com"
+					"wss://tracker.btorrent.xyz"
 				],
 			})
 
