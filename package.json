@@ -13,5 +13,8 @@
 	"scripts": {
 		"start": "node tracker.cjs"
 	},
-	"type": "module"
+	"type": "module",
+	"engines": {
+		"yarn": "1.x.x"
+	}
 }
