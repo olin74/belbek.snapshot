@@ -8,7 +8,7 @@ const puppeteer = require("puppeteer");
 	// redis
 	const client = await createClient({
 		url: process.env.REDIS_URL_SNAPSHOT,
-		// password: process.env.REDIS_PASSWORD,
+		password: process.env.REDIS_PASSWORD,
 	})
 	client.on("error", (err) => console.log("redis: client error", err))
 
