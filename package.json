@@ -1,13 +1,13 @@
 {
 	"name": "belbek-redis-snapshot",
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"description": "a bridge",
 	"main": "index.cjs",
 	"author": "Belbek Walley Software",
 	"license": "MIT",
 	"dependencies": {
-		"puppeteer": "^11.0.0",
-		"redis": "^3.1.2"
+		"puppeteer": "^13.0.0",
+		"redis": "^4.0.0"
 	},
 	"type": "module"
 }

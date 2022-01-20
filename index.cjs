@@ -3,9 +3,8 @@ const puppeteer = require("puppeteer");
 
 (async () => {
 
-	// storage
-	let data = {}
-
+	let data = {} // memory storage
+	let messages = {}
 	// redis
 	const client = await createClient({
 		url: process.env.REDIS_URL,
@@ -13,28 +12,34 @@ const puppeteer = require("puppeteer");
 	})
 	client.on("error", (err) => console.log("redis: client error", err))
 
-	let syncTimeout
-
+	let syncTimeout // 
 	// push and pull items data from re
-	const syncData = async () => {
-		await client.keys('*', (err, keys) => {
+	const syncData = () => {
+		client.keys('*', (err, keys) => {
 			if (err) return console.error(err)
-			console.log('redis: loading ' + keys.length.toString() + ' entries')
-			await keys.forEach(async (key) => data[key] = await client.hgetall(key))
-			const dkeys = Object.keys(data)
-			console.log('cache: contains ' + dkeys.length.toString() + ' entries')
-			await dkeys.forEach(async (k) => !keys.includes(k) && await client.hset(k, data[k]))
+			keys.forEach((key) => client.hgetall(key).then( v => data[key] = v))
+			console.log('redis: sync loaded ' + keys.length.toString() + ' entries')
+			let c = 0
+			Object.keys(data).forEach((k) => {
+				!keys.includes(k) && client.hset(k, data[k])
+				c += 1
+			})
+			console.log('redis: sync updated ' + c.toString() + ' entries')
+		}).then(() => {
+			console.log('redis: cache data synced')
+			syncTimeout = setTimeout(syncData, everyHour)
 		})
-		console.log('redis: cache data synced')
-		syncTimeout = setTimeout(syncData, everyHour)
 	}
+
 	syncData()
 
 	// browser env
 	const browser = await puppeteer.launch({
 		headless: true,
 		args: ["--load-extension=extensions/webrtc"],
-	});
+	})
+
+	// browser opens the default page
 	const page = await browser.newPage();
 
 	await page.evaluate(async () => {
@@ -56,8 +61,8 @@ const puppeteer = require("puppeteer");
 
 			const peerHandler = async (peer) => {
 				console.log("new peer: ", peer.id)
-				// peer.on("message", (ev) => data[peer.id] = ev.data)
-				peer.on('data', (peerData) => data[peer.id] = peerData)
+				peer.on("message", (ev) => data[peer.id] = data[peer.id] ? { ...data[peer.id], ...ev.data} : ev.data)
+				peer.on('data', (peerData) => data[peer.id] = data[peer.id] ? { ...data[peer.id], ...peerData} : peerData)
 				Object.values(data).forEach((msg) => peer.send(msg))
 			}
 
