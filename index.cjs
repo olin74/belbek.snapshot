@@ -12,11 +12,11 @@ const puppeteer = require("puppeteer");
 	})
 	client.on("error", (err) => console.log("redis: client error", err))
 
-	await client.connect()
-
 	let syncTimeout // 
 	// push and pull items data from re
-	const syncData = () => {
+	const syncData = async () => {
+		await client.connect()
+		console.dir(client)
 		client.keys('*', (err, keys) => {
 			if (err) return console.error(err)
 			const dkeys = Object.keys(data)
@@ -28,6 +28,7 @@ const puppeteer = require("puppeteer");
 			console.log('redis: cache data synced')
 			syncTimeout = setTimeout(syncData, everyHour)
 		})
+		await client.quit()
 	}
 
 	syncData()
