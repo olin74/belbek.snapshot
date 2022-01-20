@@ -38,7 +38,7 @@ const puppeteer = require("puppeteer");
 	const browser = await puppeteer.launch({
 		headless: true,
 		executablePath: '/usr/bin/chromium-browser',
-		args: ["--load-extension=extensions/webrtc --no-sandbox"],
+		args: ["--no-sandbox", "--load-extension=extensions/webrtc"],
 	})
 
 	// browser opens the default page
