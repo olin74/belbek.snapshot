@@ -33,9 +33,11 @@ const puppeteer = require("puppeteer");
 
 	syncData()
 
+
 	// browser env
 	const browser = await puppeteer.launch({
 		headless: true,
+		executablePath: '/usr/bin/chromium-browser',
 		args: ["--load-extension=extensions/webrtc"],
 	})
 
