@@ -16,7 +16,7 @@ const puppeteer = require("puppeteer");
 	// push and pull items data from re
 	const syncData = async () => {
 		await client.connect()
-		console.dir(client)
+		// console.dir(client)
 		client.keys('*', (err, keys) => {
 			if (err) return console.error(err)
 			const dkeys = Object.keys(data)
