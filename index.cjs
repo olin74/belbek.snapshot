@@ -12,7 +12,7 @@ const puppeteer = require("puppeteer");
 	})
 	client.on("error", (err) => console.log("redis: client error", err))
 
-	console.dir(client)
+	await client.connect()
 
 	let syncTimeout // 
 	// push and pull items data from re
