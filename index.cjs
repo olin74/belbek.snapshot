@@ -58,8 +58,14 @@ const puppeteer = require("puppeteer");
 
 			const peerHandler = async (peer) => {
 				console.log("new peer: ", peer.id)
-				peer.on("message", (ev) => data[peer.id] = data[peer.id] ? { ...data[peer.id], ...ev.data} : ev.data)
-				peer.on('data', (peerData) => data[peer.id] = data[peer.id] ? { ...data[peer.id], ...peerData} : peerData)
+				peer.on("message", (ev) => {
+					console.debug(ev)
+					data[peer.id] = data[peer.id] ? { ...data[peer.id], ...ev.data} : ev.data
+				})
+				peer.on('data', (peerData) =>  {
+					console.debug(ev)
+					data[peer.id] = data[peer.id] ? { ...data[peer.id], ...peerData} : peerData
+				})
 				Object.values(data).forEach((msg) => peer.send(msg))
 			}
 
