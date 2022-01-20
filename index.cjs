@@ -1,5 +1,7 @@
-const { createClient } = require("redis");
-const puppeteer = require("puppeteer");
+const { createClient } = require("redis")
+const puppeteer = require("puppeteer")
+
+const everyHour = 1000 * 60 * 60
 
 (async () => {
 
