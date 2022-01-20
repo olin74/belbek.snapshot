@@ -17,14 +17,11 @@ const puppeteer = require("puppeteer");
 	const syncData = () => {
 		client.keys('*', (err, keys) => {
 			if (err) return console.error(err)
+			const dkeys = Object.keys(data)
+			dkeys.forEach((k) => client.hset(k, data[k]) )
+			console.log('redis: sync updated ' + dkeys.length.toString() + ' entries')
 			keys.forEach((key) => client.hgetall(key).then( v => data[key] = v))
 			console.log('redis: sync loaded ' + keys.length.toString() + ' entries')
-			let c = 0
-			Object.keys(data).forEach((k) => {
-				!keys.includes(k) && client.hset(k, data[k])
-				c += 1
-			})
-			console.log('redis: sync updated ' + c.toString() + ' entries')
 		}).then(() => {
 			console.log('redis: cache data synced')
 			syncTimeout = setTimeout(syncData, everyHour)
