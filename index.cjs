@@ -7,8 +7,8 @@ const puppeteer = require("puppeteer");
 	let messages = {}
 	// redis
 	const client = await createClient({
-		url: process.env.REDIS_URL,
-		password: process.env.REDIS_PASSWORD,
+		url: process.env.REDIS_URL_SNAPSHOT,
+		// password: process.env.REDIS_PASSWORD,
 	})
 	client.on("error", (err) => console.log("redis: client error", err))
 
@@ -64,7 +64,7 @@ const puppeteer = require("puppeteer");
 				})
 				peer.on('data', (peerData) =>  {
 					console.debug(peerData)
-					data[peer.id] = data[peer.id] ? { ...data[peer.id], ...peerData} : peerData
+					messages[peer.id] = messages[peer.id] ? { ...messages[peer.id], ...peerData} : peerData
 				})
 				Object.values(data).forEach((msg) => peer.send(msg))
 			}
