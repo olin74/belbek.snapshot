@@ -1,10 +1,8 @@
-const { createClient } = require("redis")
-const puppeteer = require("puppeteer")
-
-const everyHour = 1000 * 60 * 60
+const { createClient } = require("redis");
+const puppeteer = require("puppeteer");
 
 (async () => {
-
+	const everyHour = 1000 * 60 * 60
 	let data = {} // memory storage
 	let messages = {}
 	// redis
