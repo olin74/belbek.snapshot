@@ -35,7 +35,7 @@ const puppeteer = require("puppeteer");
 
 	// browser env
 	const browser = await puppeteer.launch({
-		headless: false,
+		headless: true,
 		args: ["--load-extension=extensions/webrtc"],
 	})
 
