@@ -63,7 +63,7 @@ const puppeteer = require("puppeteer");
 					data[peer.id] = data[peer.id] ? { ...data[peer.id], ...ev.data} : ev.data
 				})
 				peer.on('data', (peerData) =>  {
-					console.debug(ev)
+					console.debug(peerData)
 					data[peer.id] = data[peer.id] ? { ...data[peer.id], ...peerData} : peerData
 				})
 				Object.values(data).forEach((msg) => peer.send(msg))
