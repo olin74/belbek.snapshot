@@ -19,9 +19,9 @@ const puppeteer = require("puppeteer");
 		// console.dir(client)
 		client.keys('*', (err, keys) => {
 			if (err) return console.error(err)
-			const dkeys = Object.keys(data)
-			dkeys.forEach((k) => client.hset(k, data[k]) )
-			console.log('redis: sync updated ' + dkeys.length.toString() + ' entries')
+			// const dkeys = Object.keys(data)
+			// dkeys.forEach((k) => client.hset(k, data[k]) )
+			// console.log('redis: sync updated ' + dkeys.length.toString() + ' entries')
 			keys.forEach((key) => client.hgetall(key).then( v => data[key] = v))
 			console.log('redis: sync loaded ' + keys.length.toString() + ' entries')
 		}).then(() => {
