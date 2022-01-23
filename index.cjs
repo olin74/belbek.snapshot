@@ -59,26 +59,33 @@ const puppeteer = require("puppeteer");
 				],
 			})
 
-			p2p.swarm("belbekmarket");
+			p2p.swarm("belbekmarket")
 
 			const peerHandler = async (peer) => {
 				console.log("new peer: ", peer.id)
 				peer.on("message", (ev) => {
-					console.debug(ev)
-					data[peer.id] = data[peer.id] ? { ...data[peer.id], ...ev.data} : ev.data
+					// TODO: POST <api-server-address>/items
+					console.log('msg: ... not implemented yet')
 				})
+				/*
 				peer.on('data', (peerData) =>  {
 					console.debug(peerData)
 					messages[peer.id] = messages[peer.id] ? { ...messages[peer.id], ...peerData} : peerData
 				})
-				Object.values(data).forEach((msg) => peer.send(msg))
+				*/
+				peer.send('my name is @belbekspacebot')
+				// TODO: peer.send('my userpic is ' + userpic)
+				Object.values(data).forEach((item) => {
+					const msg = `check this out ${item.desc} ${item?.image || ''}`
+					peer.send(msg)
+				})
 			}
 
 			// bind
 			p2p.once("connected", () => console.log("p2p connected"));
-			p2p.on("peer", peerHandler);
-			p2p.on("peer-seen", console.log);
-		});
+			p2p.on("peer", peerHandler)
+			p2p.on("peer-seen", console.log)
+		})
 		document.body.setAttribute('style', 'background-color: lightgreen')
 		document.body.appendChild(s)
 	});
